@@ -1,0 +1,41 @@
+{
+  "id": "dev-glow-pulse-text",
+  "card_title": "[DEV] Glow & Pulse Text",
+  "card_description": "A classic animated text effect combining a neon-like glow with a subtle pulsing/scaling animation using only CSS.",
+  "card_preview": {
+    "html": "<h1 class='preview-title'>Glow & Pulse</h1>",
+    "css": "h1.preview-title { color: hsl(217, 100%, 85%); font-family: 'Exo 2', sans-serif; font-size: 1.75rem; animation: card_glow 2s ease-in-out infinite, card_pulse 2s ease-in-out infinite; } @keyframes card_glow { 0%, 100% { text-shadow: 0 0 8px hsl(217, 100%, 65%), 0 0 16px hsl(217, 100%, 65%); } 50% { text-shadow: 0 0 16px hsl(217, 100%, 65%), 0 0 32px hsl(217, 100%, 65%); } } @keyframes card_pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }"
+  },
+  "modal_content": [
+    {
+      "type": "title",
+      "text": "Animated Glow & Pulse Text Effect"
+    },
+    {
+      "type": "markdown",
+      "text": "This effect creates an engaging, animated title using two separate CSS `@keyframes` animations. It's highly effective for headers or key text you want to draw attention to. The glow is achieved using the `text-shadow` property, while the pulse is a simple `transform: scale` animation."
+    },
+    {
+      "type": "subtitle",
+      "text": "HTML Snippet"
+    },
+    {
+      "type": "code_snippet",
+      "language": "html",
+      "code": "<h1 class=\"animated-title\">YOUR TEXT HERE</h1>"
+    },
+    {
+      "type": "subtitle",
+      "text": "CSS Snippet"
+    },
+    {
+      "type": "markdown",
+      "text": "First, define your theme colors using CSS variables for easy customization. The `.animated-title` class applies both animations simultaneously."
+    },
+    {
+      "type": "code_snippet",
+      "language": "css",
+      "code": ":root {\n    --glow-color: hsl(217, 100%, 65%);\n    --text-color: hsl(217, 100%, 85%);\n}\n\n.animated-title {\n    color: var(--text-color);\n    font-family: 'Exo 2', sans-serif; /* Example font */\n    animation: glow 2s ease-in-out infinite, pulse 2s ease-in-out infinite;\n}\n\n@keyframes glow {\n    0%, 100% { \n        text-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color); \n    }\n    50% { \n        text-shadow: 0 0 20px var(--glow-color), 0 0 40px var(--glow-color); \n    }\n}\n\n@keyframes pulse {\n    0%, 100% { \n        transform: scale(1); \n    }\n    50% { \n        transform: scale(1.05); \n    }\n}"
+    }
+  ]
+}
