@@ -3,77 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Element Dashboard</title>
+    <title>Element Dashboard v1.00</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
     
-    <!-- External Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 
-    <!-- Syntax Highlighting Themes -->
     <link id="prism-theme-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
     <link id="prism-theme-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" disabled />
 
     <style>
+        /*
+         * --- Changelog ---
+         * v1.00 - Stable Release
+         * - Implemented dynamic element loading from a simulated file list.
+         * - Established a default 3D Glassmorphism card style.
+         * - Integrated a dynamic, theme-aware background with blobs and particles.
+         * - Added a functional multi-theme switcher with localStorage persistence.
+         * - Added "Glow & Pulse" animation to the main dashboard title.
+        */
+
         /* --- THEME DEFINITIONS --- */
         .theme-ubuntu {
-            --bg-dark: #2c001e;
-            --text-main: #f2f2f2;
-            --text-muted: #d9d9d9;
-            --highlight-primary: #E95420;
-            --highlight-secondary: #dd4814;
-            --border-color: #58334d;
-            --particle-color: "#E95420";
-            --particle-line-color: "#58334d";
-            --bg-card-glass: rgba(59, 20, 47, 0.5); /* Increased opacity */
-            --border-card-glass: rgba(233, 84, 32, 0.2);
-            --border-card-glow: rgba(233, 84, 32, 0.6);
-            --modal-bg: rgba(44, 0, 30, 0.7); /* More solid modal BG */
+            --bg-dark: #2c001e; --text-main: #f2f2f2; --text-muted: #d9d9d9;
+            --highlight-primary: #E95420; --highlight-secondary: #dd4814;
+            --border-color: #58334d; --particle-color: "#E95420"; --particle-line-color: "#58334d";
+            --bg-card-glass: rgba(59, 20, 47, 0.5); --border-card-glass: rgba(233, 84, 32, 0.2);
+            --border-card-glow: rgba(233, 84, 32, 0.6); --modal-bg: rgba(44, 0, 30, 0.7);
         }
         .theme-pastel {
-            --bg-dark: #211F2C;
-            --text-main: #EAE6FF;
-            --text-muted: #b0a9d4;
-            --highlight-primary: #A48DFA;
-            --highlight-secondary: #8DFAAF;
-            --border-color: #403d52;
-            --particle-color: "#A48DFA";
-            --particle-line-color: "#403d52";
-            --bg-card-glass: rgba(42, 39, 57, 0.5); /* Increased opacity */
-            --border-card-glass: rgba(164, 141, 250, 0.2);
-            --border-card-glow: rgba(164, 141, 250, 0.6);
-            --modal-bg: rgba(33, 31, 44, 0.7); /* More solid modal BG */
+            --bg-dark: #211F2C; --text-main: #EAE6FF; --text-muted: #b0a9d4;
+            --highlight-primary: #A48DFA; --highlight-secondary: #8DFAAF;
+            --border-color: #403d52; --particle-color: "#A48DFA"; --particle-line-color: "#403d52";
+            --bg-card-glass: rgba(42, 39, 57, 0.5); --border-card-glass: rgba(164, 141, 250, 0.2);
+            --border-card-glow: rgba(164, 141, 250, 0.6); --modal-bg: rgba(33, 31, 44, 0.7);
         }
         .theme-light {
-            --bg-dark: #F4F1FF;
-            --text-main: #2C2A3A;
-            --text-muted: #5e5a7b;
-            --highlight-primary: #8A6DFF;
-            --highlight-secondary: #00C6AE;
-            --border-color: #e0d9ff;
-            --particle-color: "#8A6DFF";
-            --particle-line-color: "#d1c6ff";
-            --bg-card-glass: rgba(255, 255, 255, 0.5); /* Increased opacity */
-            --border-card-glass: rgba(138, 109, 255, 0.3);
-            --border-card-glow: rgba(138, 109, 255, 0.6);
-            --modal-bg: rgba(244, 241, 255, 0.7); /* More solid modal BG */
+            --bg-dark: #F4F1FF; --text-main: #2C2A3A; --text-muted: #5e5a7b;
+            --highlight-primary: #8A6DFF; --highlight-secondary: #00C6AE;
+            --border-color: #e0d9ff; --particle-color: "#8A6DFF"; --particle-line-color: "#d1c6ff";
+            --bg-card-glass: rgba(255, 255, 255, 0.5); --border-card-glass: rgba(138, 109, 255, 0.3);
+            --border-card-glow: rgba(138, 109, 255, 0.6); --modal-bg: rgba(244, 241, 255, 0.7);
         }
 
         /* --- CORE STYLES --- */
         body {
-            font-family: 'Ubuntu', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            transition: background-color 0.5s ease, color 0.5s ease;
+            font-family: 'Ubuntu', sans-serif; background-color: var(--bg-dark);
+            color: var(--text-main); transition: background-color 0.5s ease, color 0.5s ease;
             overflow-x: hidden;
         }
         h1, h2, h3, h4, h5, h6 { font-family: 'Ubuntu Mono', monospace; }
         .content-wrapper { position: relative; z-index: 2; }
+
+        /* --- ANIMATIONS --- */
+        .header-pulse { animation: headerGlow 2.5s infinite ease-in-out; }
+        @keyframes headerGlow {
+            0%, 100% {
+                transform: scale(1);
+                text-shadow: 0 0 5px var(--text-main), 0 0 15px var(--highlight-primary);
+            }
+            50% {
+                transform: scale(1.02);
+                text-shadow: 0 0 15px var(--text-main), 0 0 30px var(--highlight-primary);
+            }
+        }
 
         /* --- BACKGROUND EFFECTS --- */
         .background-blobs { position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: 0; }
@@ -84,8 +82,7 @@
         
         /* --- DEFAULT CARD STYLE (Glassmorphism + 3D) --- */
         .tech-card {
-            background: var(--bg-card-glass);
-            border: 1px solid var(--border-card-glass);
+            background: var(--bg-card-glass); border: 1px solid var(--border-card-glass);
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             border-radius: 1rem; transform-style: preserve-3d;
             transition: transform 0.1s linear, border-color 0.3s ease, box-shadow 0.3s ease;
@@ -94,35 +91,12 @@
         .tech-card:hover { border-color: var(--border-card-glow); box-shadow: 0 0 30px -10px var(--border-card-glow); }
         .card-preview { min-height: 120px; display: flex; align-items: center; justify-content: center; padding: 1rem; border-bottom: 1px solid var(--border-card-glass); }
         
-        /* --- MODAL STYLES (Improved) --- */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(0,0,0,0.5); /* Darker backdrop */
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            display: none; align-items: center; justify-content: center;
-            z-index: 50; opacity: 0;
-            transition: opacity 0.3s ease-in-out;
-        }
-        .modal-container {
-            background-color: var(--modal-bg); /* Use new solid variable */
-            border-radius: 1rem; border: 1px solid var(--border-card-glow);
-            width: 90%; max-width: 800px; max-height: 90vh;
-            display: flex; flex-direction: column;
-            transform: translateY(20px) scale(0.98); /* Start slightly down and smaller */
-            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1); /* Smooth spring animation */
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4);
-            overflow: hidden;
-        }
-        .modal-header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-card-glass);
-            flex-shrink: 0;
-        }
+        /* --- MODAL STYLES --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; z-index: 50; opacity: 0; transition: opacity 0.3s ease-in-out; }
+        .modal-container { background-color: var(--modal-bg); border-radius: 1rem; border: 1px solid var(--border-card-glow); width: 90%; max-width: 800px; max-height: 90vh; display: flex; flex-direction: column; transform: translateY(20px) scale(0.98); transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4); overflow: hidden; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-card-glass); flex-shrink: 0; }
         .modal-title { font-size: 1.25rem; font-weight: 700; color: var(--text-main); }
-        .modal-close-btn {
-            background: none; border: none; font-size: 1.75rem; line-height: 1;
-            color: var(--text-muted); cursor: pointer; transition: color 0.2s, transform 0.2s;
-        }
+        .modal-close-btn { background: none; border: none; font-size: 1.75rem; line-height: 1; color: var(--text-muted); cursor: pointer; transition: color 0.2s, transform 0.2s; }
         .modal-close-btn:hover { color: var(--text-main); transform: rotate(90deg); }
         .modal-content { padding: 0 1.5rem 1.5rem 1.5rem; overflow-y: auto; }
         
@@ -139,7 +113,7 @@
 
     <div class="content-wrapper">
         <header class="text-center mb-12">
-            <h1 class="text-4xl sm:text-5xl font-bold">Element Dashboard</h1>
+            <h1 class="text-4xl sm:text-5xl font-bold header-pulse">Element Dashboard</h1>
             <p class="text-lg text-muted mt-2">A dynamic library of UI components.</p>
             <div class="mt-8"> <button id="sync-button" class="sync-button font-bold text-lg"> Sync Elements </button> </div>
         </header>
@@ -157,12 +131,14 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // --- CONFIGURATION ---
             const elementFiles = [
                 '[DEV]glow-pulse-text.json',
                 '[DEV]fab-theme-switcher.json',
                 '[DEV]glass-3d-card.json'
             ];
             
+            // --- ELEMENT SELECTORS ---
             const syncButton = document.getElementById('sync-button');
             const themeSwitcher = document.getElementById('theme-switcher');
             const cardGrid = document.getElementById('card-grid');
