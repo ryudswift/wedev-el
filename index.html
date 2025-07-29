@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<!-- The class here will be changed by JavaScript -->
-<html lang="en" class="theme-dark"> 
+<!-- The class here is managed by JavaScript, which loads your saved theme -->
+<html lang="en"> 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,29 +13,33 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+    
+    <!-- Code Syntax Highlighting Themes -->
+    <link id="prism-theme-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+    <link id="prism-theme-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" disabled />
+
 
     <style>
         /* --- THEME DEFINITIONS --- */
         /* 1. Default Dark Theme */
         .theme-dark {
-            --bg-color: #111827;
-            --card-bg: #1f2937;
-            --border-color: #374151;
-            --primary-text: #f9fafb;
-            --secondary-text: #9ca3af;
-            --accent-color: #3b82f6;
-            --modal-backdrop: rgba(0, 0, 0, 0.8);
+            --bg-color: #111827; /* slate-900 */
+            --card-bg: #1f2937; /* slate-800 */
+            --border-color: #374151; /* slate-700 */
+            --primary-text: #f9fafb; /* slate-50 */
+            --secondary-text: #9ca3af; /* slate-400 */
+            --accent-color: #3b82f6; /* blue-500 */
+            --modal-backdrop: rgba(0, 0, 0, 0.7);
         }
-        /* 2. Light Theme */
+        /* 2. Light Theme (New high-contrast palette) */
         .theme-light {
-            --bg-color: #f9fafb;
-            --card-bg: #ffffff;
-            --border-color: #e5e7eb;
-            --primary-text: #111827;
-            --secondary-text: #4b5563;
-            --accent-color: #2563eb;
-            --modal-backdrop: rgba(255, 255, 255, 0.8);
+            --bg-color: #f8fafc; /* slate-50 */
+            --card-bg: #ffffff; /* white */
+            --border-color: #e2e8f0; /* slate-200 */
+            --primary-text: #0f172a; /* slate-900 */
+            --secondary-text: #64748b; /* slate-500 */
+            --accent-color: #4f46e5; /* indigo-600 */
+            --modal-backdrop: rgba(15, 23, 42, 0.6); /* slate-900 with opacity */
         }
         /* 3. Ubuntu Theme */
         .theme-ubuntu {
@@ -45,10 +49,10 @@
             --primary-text: #f2f2f2;
             --secondary-text: #d9d9d9;
             --accent-color: #E95420;
-            --modal-backdrop: rgba(0, 0, 0, 0.8);
+            --modal-backdrop: rgba(0, 0, 0, 0.7);
         }
 
-        /* --- CORE STYLES --- */
+        /* --- CORE STYLES (Unchanged) --- */
         body {
             background-color: var(--bg-color);
             color: var(--primary-text);
@@ -81,13 +85,13 @@
             align-items: center;
             justify-content: center;
             padding: 1rem;
-            background: var(--bg-color); /* Use theme variable */
-            border-bottom: 1px solid var(--border-color); /* Use theme variable */
+            background: var(--bg-color);
+            border-bottom: 1px solid var(--border-color);
             transition: background-color 0.3s ease, border-color 0.3s ease;
         }
         .sync-button {
              background-color: var(--accent-color);
-             color: white;
+             color: var(--card-bg); /* Better contrast for button text */
              font-family: 'Roboto Mono', monospace;
              padding: 0.75rem 2rem;
              border-radius: 0.5rem;
@@ -102,7 +106,6 @@
              opacity: 0.5;
              cursor: not-allowed;
         }
-        /* Theme Switcher FAB */
         #theme-switcher {
             position: fixed;
             bottom: 1.5rem;
@@ -125,8 +128,6 @@
             transform: scale(1.1) rotate(15deg);
             border-color: var(--accent-color);
         }
-
-        /* Modal Styles */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background-color: var(--modal-backdrop);
@@ -143,14 +144,14 @@
         }
         .modal-content {
             padding: 1.5rem; overflow-y: auto;
-            font-family: 'Exo 2', sans-serif;
         }
         .modal-content h1, .modal-content h2 {
             font-family: 'Roboto Mono', monospace; font-weight: 700;
             margin-top: 1.5em; margin-bottom: 0.5em;
+            color: var(--primary-text);
         }
-        .modal-content h1 { font-size: 1.5rem; color: var(--primary-text); }
-        .modal-content h2 { font-size: 1.25rem; color: var(--primary-text); }
+        .modal-content h1 { font-size: 1.5rem; }
+        .modal-content h2 { font-size: 1.25rem; }
         .modal-content p { color: var(--secondary-text); line-height: 1.6; }
         .modal-content code:not([class*="language-"]) {
             background-color: var(--border-color);
@@ -214,10 +215,25 @@
             let currentThemeIndex = 0;
 
             function applyTheme(themeClass) {
-                // Simplified and more direct way to set the class
+                // Set the class on the root <html> element
                 document.documentElement.className = themeClass;
+                // Save the choice to localStorage
                 localStorage.setItem('dashboard-theme', themeClass);
+                // Keep track of the current theme index
                 currentThemeIndex = themes.indexOf(themeClass);
+
+                // Get the link elements for the PrismJS themes
+                const darkPrismTheme = document.getElementById('prism-theme-dark');
+                const lightPrismTheme = document.getElementById('prism-theme-light');
+                
+                // Enable the correct stylesheet and disable the other
+                if (themeClass === 'theme-light') {
+                    darkPrismTheme.disabled = true;
+                    lightPrismTheme.disabled = false;
+                } else {
+                    darkPrismTheme.disabled = false;
+                    lightPrismTheme.disabled = true;
+                }
             }
 
             themeSwitcher.addEventListener('click', () => {
@@ -225,7 +241,7 @@
                 applyTheme(themes[nextThemeIndex]);
             });
 
-            // --- MAIN DASHBOARD LOGIC ---
+            // --- MAIN DASHBOARD LOGIC (Unchanged) ---
             async function syncAndLoadElements() {
                 syncButton.disabled = true;
                 syncButton.textContent = 'Syncing...';
@@ -345,7 +361,7 @@
 
             // --- INITIAL PAGE LOAD ---
             // Load saved theme or default to the first one
-            const savedTheme = localStorage.getItem('dashboard-theme') || themes[0];
+            const savedTheme = localStorage.getItem('dashboard-theme') || 'theme-dark';
             applyTheme(savedTheme);
         });
     </script>
