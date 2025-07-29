@@ -1,0 +1,58 @@
+{
+  "id": "glass-3d-card",
+  "card_title": "Glassmorphism 3D Tilt Card",
+  "card_description": "A card that tilts in 3D based on mouse position, with a semi-transparent glass effect and shimmer on hover.",
+  "card_preview": {
+    "html": "<div class=\"preview-3d-card\">\n  <span style=\"font-size: 1.25rem; font-weight: bold;\">Hover Over Me</span>\n</div>",
+    "css": "/* Note: This CSS uses the dashboard's theme variables. */\n.preview-3d-card {\n  background: rgba(255, 255, 255, 0.05);\n  border: 1px solid rgba(255, 255, 255, 0.1);\n  backdrop-filter: blur(10px);\n  -webkit-backdrop-filter: blur(10px);\n  border-radius: 1rem;\n  padding: 2rem;\n  text-align: center;\n  color: var(--primary-text);\n  width: 250px;\n  height: 150px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  position: relative;\n  overflow: hidden;\n  transform-style: preserve-3d;\n  transition: transform 0.1s linear;\n}\n.preview-3d-card::before {\n  content: '';\n  position: absolute;\n  top: 0;\n  left: -150%;\n  width: 75%;\n  height: 100%;\n  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);\n  transition: left 0.6s ease;\n}\n.preview-3d-card:hover::before {\n  left: 150%;\n}"
+  },
+  "modal_content": [
+    {
+      "type": "title",
+      "text": "Glassmorphism 3D Tilt Card"
+    },
+    {
+      "type": "markdown",
+      "text": "This component combines three distinct effects: **Glassmorphism** for a semi-transparent look, a **3D Tilt** that responds to the user's mouse position, and a **Shimmer** that sweeps across the card on hover. It requires both CSS for the styling and JavaScript to handle the interactive tilt."
+    },
+    {
+      "type": "subtitle",
+      "text": "HTML Structure"
+    },
+    {
+      "type": "markdown",
+      "text": "The HTML is simple. You just need a container element with a specific class that the CSS and JavaScript can target."
+    },
+    {
+      "type": "code_snippet",
+      "language": "html",
+      "code": "<div class=\"interactive-3d-card\">\n  <h3>Card Title</h3>\n  <p>Your content goes here.</p>\n</div>"
+    },
+    {
+      "type": "subtitle",
+      "text": "CSS Styling"
+    },
+    {
+      "type": "markdown",
+      "text": "The CSS handles the glass effect (`backdrop-filter`), the initial 3D setup (`transform-style`), and the shimmering `::before` pseudo-element for the hover animation. These styles use CSS variables from the dashboard's theme system."
+    },
+    {
+      "type": "code_snippet",
+      "language": "css",
+      "code": ".interactive-3d-card {\n  /* Glassmorphism */\n  background: var(--card-bg);\n  backdrop-filter: blur(12px);\n  -webkit-backdrop-filter: blur(12px);\n  border: 1px solid var(--border-color);\n  \n  /* 3D & Transition Setup */\n  border-radius: 1rem;\n  transform-style: preserve-3d;\n  transition: transform 0.1s linear, border-color 0.3s ease, box-shadow 0.3s ease;\n  \n  /* Shimmer Setup */\n  position: relative;\n  overflow: hidden;\n}\n\n.interactive-3d-card:hover {\n  border-color: var(--accent-color);\n  box-shadow: 0 0 30px -10px var(--accent-color);\n}\n\n/* Shimmer Effect */\n.interactive-3d-card::before {\n  content: '';\n  position: absolute;\n  top: 0;\n  left: -150%; /* Start off-screen to the left */\n  width: 75%;\n  height: 100%;\n  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);\n  transition: left 0.8s ease;\n}\n\n.interactive-3d-card:hover::before {\n  left: 150%; /* Move across the card to the right */\n}"
+    },
+    {
+      "type": "subtitle",
+      "text": "JavaScript Interaction"
+    },
+    {
+      "type": "markdown",
+      "text": "This JavaScript function needs to be attached to each card. It listens for mouse movement to calculate and apply the `rotateX` and `rotateY` transforms, creating the 3D tilt effect. The function should be called after your elements are loaded into the page."
+    },
+    {
+      "type": "code_snippet",
+      "language": "javascript",
+      "code": "function initialize3DTilt(selector) {\n  const cards = document.querySelectorAll(selector);\n\n  cards.forEach(card => {\n    card.addEventListener('mousemove', (e) => {\n      const { width, height, left, top } = card.getBoundingClientRect();\n      const x = e.clientX - left;\n      const y = e.clientY - top;\n      const maxRotate = 8; // Max rotation in degrees\n\n      const rotateX = ((y - height / 2) / (height / 2) * -maxRotate).toFixed(2);\n      const rotateY = ((x - width / 2) / (width / 2) * maxRotate).toFixed(2);\n\n      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`;\n    });\n\n    card.addEventListener('mouseleave', () => {\n      card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';\n    });\n  });\n}\n\n// How to use it:\n// Call this function after you have loaded your cards.\n// initialize3DTilt('.interactive-3d-card');"
+    }
+  ]
+}
