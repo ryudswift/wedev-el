@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<!-- The class here will be changed by JavaScript -->
+<html lang="en" class="theme-dark"> 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,7 +16,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
 
     <style>
-        :root {
+        /* --- THEME DEFINITIONS --- */
+        /* 1. Default Dark Theme */
+        .theme-dark {
             --bg-color: #111827;
             --card-bg: #1f2937;
             --border-color: #374151;
@@ -24,22 +27,45 @@
             --accent-color: #3b82f6;
             --modal-backdrop: rgba(0, 0, 0, 0.8);
         }
+        /* 2. Light Theme */
+        .theme-light {
+            --bg-color: #f9fafb;
+            --card-bg: #ffffff;
+            --border-color: #e5e7eb;
+            --primary-text: #111827;
+            --secondary-text: #4b5563;
+            --accent-color: #2563eb;
+            --modal-backdrop: rgba(255, 255, 255, 0.8);
+        }
+        /* 3. Ubuntu Theme */
+        .theme-ubuntu {
+            --bg-color: #2c001e;
+            --card-bg: #3b142f;
+            --border-color: #58334d;
+            --primary-text: #f2f2f2;
+            --secondary-text: #d9d9d9;
+            --accent-color: #E95420;
+            --modal-backdrop: rgba(0, 0, 0, 0.8);
+        }
+
+        /* --- CORE STYLES --- */
         body {
             background-color: var(--bg-color);
             color: var(--primary-text);
             font-family: 'Exo 2', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         .card-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 1.5rem;
-            min-height: 300px; /* Give it some height initially */
+            min-height: 300px;
         }
         .tech-card {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 0.75rem;
-            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+            transition: all 0.2s ease-out;
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -47,6 +73,7 @@
         .tech-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            border-color: var(--accent-color);
         }
         .card-preview {
             min-height: 120px;
@@ -54,7 +81,9 @@
             align-items: center;
             justify-content: center;
             padding: 1rem;
-            background: #111827;
+            background: var(--bg-color); /* Use theme variable */
+            border-bottom: 1px solid var(--border-color); /* Use theme variable */
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
         .sync-button {
              background-color: var(--accent-color);
@@ -69,10 +98,34 @@
              transform: translateY(-3px) scale(1.05);
              box-shadow: 0 8px 15px rgba(0,0,0,0.3);
         }
-         .sync-button:disabled {
+        .sync-button:disabled {
              opacity: 0.5;
              cursor: not-allowed;
-         }
+        }
+        /* Theme Switcher FAB */
+        #theme-switcher {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            background-color: var(--card-bg);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        #theme-switcher:hover {
+            transform: scale(1.1) rotate(15deg);
+            border-color: var(--accent-color);
+        }
+
         /* Modal Styles */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -86,7 +139,7 @@
             background-color: var(--card-bg); border-radius: 0.5rem; border: 1px solid var(--border-color);
             width: 90%; max-width: 800px; max-height: 90vh;
             display: flex; flex-direction: column;
-            transform: scale(0.95); transition: transform 0.3s ease;
+            transform: scale(0.95); transition: all 0.3s ease;
         }
         .modal-content {
             padding: 1.5rem; overflow-y: auto;
@@ -96,12 +149,15 @@
             font-family: 'Roboto Mono', monospace; font-weight: 700;
             margin-top: 1.5em; margin-bottom: 0.5em;
         }
-        .modal-content h1 { font-size: 1.5rem; }
-        .modal-content h2 { font-size: 1.25rem; }
+        .modal-content h1 { font-size: 1.5rem; color: var(--primary-text); }
+        .modal-content h2 { font-size: 1.25rem; color: var(--primary-text); }
         .modal-content p { color: var(--secondary-text); line-height: 1.6; }
         .modal-content code:not([class*="language-"]) {
-            background-color: #374151; color: #e5e7eb; padding: 0.2em 0.4em;
-            border-radius: 0.25rem; font-family: 'Roboto Mono', monospace;
+            background-color: var(--border-color);
+            color: var(--primary-text);
+            padding: 0.2em 0.4em;
+            border-radius: 0.25rem;
+            font-family: 'Roboto Mono', monospace;
         }
         pre[class*="language-"] {
             position: relative; border-radius: 0.5rem; margin: 1rem 0; overflow: hidden;
@@ -137,62 +193,67 @@
 
     <div id="modal-container"></div>
     
+    <button id="theme-switcher" title="Switch Theme">🎨</button>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // --- CONFIGURATION ---
-            // This array simulates scanning your /elements/ directory.
-            // Add the filenames of your JSON files here.
             const elementFiles = [
                 '[DEV]glow-pulse-text.json',
                 '[DEV]fab-theme-switcher.json'
-                // Add more filenames here to make them appear after sync.
             ];
             
             const cardGrid = document.getElementById('card-grid');
             const modalContainer = document.getElementById('modal-container');
             const syncButton = document.getElementById('sync-button');
             const initialPrompt = document.getElementById('initial-prompt');
+            const themeSwitcher = document.getElementById('theme-switcher');
 
-            /**
-             * Fetches all element JSON files and builds the UI.
-             */
+            // --- THEME SWITCHER LOGIC ---
+            const themes = ['theme-dark', 'theme-light', 'theme-ubuntu'];
+            let currentThemeIndex = 0;
+
+            function applyTheme(themeClass) {
+                // Simplified and more direct way to set the class
+                document.documentElement.className = themeClass;
+                localStorage.setItem('dashboard-theme', themeClass);
+                currentThemeIndex = themes.indexOf(themeClass);
+            }
+
+            themeSwitcher.addEventListener('click', () => {
+                const nextThemeIndex = (currentThemeIndex + 1) % themes.length;
+                applyTheme(themes[nextThemeIndex]);
+            });
+
+            // --- MAIN DASHBOARD LOGIC ---
             async function syncAndLoadElements() {
-                // UI feedback
                 syncButton.disabled = true;
                 syncButton.textContent = 'Syncing...';
-                cardGrid.innerHTML = ''; // Clear the grid
-                modalContainer.innerHTML = ''; // Clear old modals
-
+                cardGrid.innerHTML = ''; 
+                modalContainer.innerHTML = '';
                 if (initialPrompt) initialPrompt.style.display = 'none';
 
                 for (const fileName of elementFiles) {
                     try {
-                        // We assume files are in a directory named /elements/
                         const response = await fetch(`./elements/${fileName}`);
-                        if (!response.ok) {
-                            throw new Error(`Failed to load ${fileName}: ${response.statusText}`);
-                        }
+                        if (!response.ok) throw new Error(`Failed to load ${fileName}`);
                         const data = await response.json();
                         
                         cardGrid.insertAdjacentHTML('beforeend', createCardHTML(data));
                         modalContainer.insertAdjacentHTML('beforeend', createModalHTML(data));
-
                     } catch (error) {
                         console.error(error);
-                        cardGrid.innerHTML += `<p>Error loading ${fileName}.</p>`;
+                        cardGrid.innerHTML += `<p class="text-red-500">Error loading ${fileName}. Check console.</p>`;
                     }
                 }
                 
                 attachEventListeners();
                 
-                // Restore button state
                 syncButton.disabled = false;
                 syncButton.textContent = 'Sync Complete';
                 setTimeout(() => syncButton.textContent = 'Sync Elements', 2000);
             }
             
-            // --- The rest of the functions (createCardHTML, createModalHTML, attachEventListeners) are the same as before ---
-
             function createCardHTML(data) {
                 const previewStyle = data.card_preview.css ? `<style>${data.card_preview.css}</style>` : '';
                 return `
@@ -223,11 +284,12 @@
                             contentHTML += marked.parse(block.text);
                             break;
                         case 'code_snippet':
-                            const highlightedCode = Prism.highlight(block.code, Prism.languages[block.language] || Prism.languages.markup, block.language);
+                            const lang = block.language || 'markup';
+                            const highlightedCode = Prism.highlight(block.code, Prism.languages[lang] || Prism.languages.markup, lang);
                             contentHTML += `
-                                <pre class="language-${block.language}">
+                                <pre class="language-${lang}">
                                     <button class="copy-btn">Copy</button>
-                                    <code class="language-${block.language}">${highlightedCode}</code>
+                                    <code class="language-${lang}">${highlightedCode}</code>
                                 </pre>
                             `;
                             break;
@@ -280,6 +342,11 @@
 
             // Attach the main event listener to the sync button
             syncButton.addEventListener('click', syncAndLoadElements);
+
+            // --- INITIAL PAGE LOAD ---
+            // Load saved theme or default to the first one
+            const savedTheme = localStorage.getItem('dashboard-theme') || themes[0];
+            applyTheme(savedTheme);
         });
     </script>
 </body>
