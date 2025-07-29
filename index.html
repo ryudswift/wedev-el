@@ -20,7 +20,7 @@
     <link id="prism-theme-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" disabled />
 
     <style>
-        /* --- THEME DEFINITIONS (from your reference file) --- */
+        /* --- THEME DEFINITIONS --- */
         .theme-ubuntu {
             --bg-dark: #2c001e;
             --text-main: #f2f2f2;
@@ -30,9 +30,10 @@
             --border-color: #58334d;
             --particle-color: "#E95420";
             --particle-line-color: "#58334d";
-            --bg-card-glass: rgba(59, 20, 47, 0.25);
+            --bg-card-glass: rgba(59, 20, 47, 0.5); /* Increased opacity */
             --border-card-glass: rgba(233, 84, 32, 0.2);
-            --border-card-glow: rgba(233, 84, 32, 0.5);
+            --border-card-glow: rgba(233, 84, 32, 0.6);
+            --modal-bg: rgba(44, 0, 30, 0.7); /* More solid modal BG */
         }
         .theme-pastel {
             --bg-dark: #211F2C;
@@ -43,9 +44,10 @@
             --border-color: #403d52;
             --particle-color: "#A48DFA";
             --particle-line-color: "#403d52";
-            --bg-card-glass: rgba(42, 39, 57, 0.25);
+            --bg-card-glass: rgba(42, 39, 57, 0.5); /* Increased opacity */
             --border-card-glass: rgba(164, 141, 250, 0.2);
-            --border-card-glow: rgba(164, 141, 250, 0.5);
+            --border-card-glow: rgba(164, 141, 250, 0.6);
+            --modal-bg: rgba(33, 31, 44, 0.7); /* More solid modal BG */
         }
         .theme-light {
             --bg-dark: #F4F1FF;
@@ -56,9 +58,10 @@
             --border-color: #e0d9ff;
             --particle-color: "#8A6DFF";
             --particle-line-color: "#d1c6ff";
-            --bg-card-glass: rgba(255, 255, 255, 0.4);
+            --bg-card-glass: rgba(255, 255, 255, 0.5); /* Increased opacity */
             --border-card-glass: rgba(138, 109, 255, 0.3);
             --border-card-glow: rgba(138, 109, 255, 0.6);
+            --modal-bg: rgba(244, 241, 255, 0.7); /* More solid modal BG */
         }
 
         /* --- CORE STYLES --- */
@@ -72,100 +75,73 @@
         h1, h2, h3, h4, h5, h6 { font-family: 'Ubuntu Mono', monospace; }
         .content-wrapper { position: relative; z-index: 2; }
 
-        /* --- BACKGROUND EFFECTS (built-in now) --- */
-        .background-blobs {
-            position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%;
-            overflow: hidden; z-index: 0;
-        }
-        .background-blobs div {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.4;
-            transition: background 0.5s ease;
-        }
-        .blob1 {
-            width: 450px; height: 450px;
-            background: var(--highlight-primary);
-            top: -150px; left: -150px;
-        }
-        .blob2 {
-            width: 350px; height: 350px;
-            background: var(--highlight-secondary);
-            bottom: -100px; right: -100px;
-        }
-        #particles-js {
-            position: fixed; width: 100%; height: 100%;
-            top: 0; left: 0; z-index: 1;
-        }
+        /* --- BACKGROUND EFFECTS --- */
+        .background-blobs { position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: 0; }
+        .background-blobs div { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.4; transition: background 0.5s ease; }
+        .blob1 { width: 450px; height: 450px; background: var(--highlight-primary); top: -150px; left: -150px; }
+        .blob2 { width: 350px; height: 350px; background: var(--highlight-secondary); bottom: -100px; right: -100px; }
+        #particles-js { position: fixed; width: 100%; height: 100%; top: 0; left: 0; z-index: 1; }
         
         /* --- DEFAULT CARD STYLE (Glassmorphism + 3D) --- */
         .tech-card {
             background: var(--bg-card-glass);
             border: 1px solid var(--border-card-glass);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 1rem;
-            transform-style: preserve-3d;
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-radius: 1rem; transform-style: preserve-3d;
             transition: transform 0.1s linear, border-color 0.3s ease, box-shadow 0.3s ease;
+            display: flex; flex-direction: column; cursor: pointer;
+        }
+        .tech-card:hover { border-color: var(--border-card-glow); box-shadow: 0 0 30px -10px var(--border-card-glow); }
+        .card-preview { min-height: 120px; display: flex; align-items: center; justify-content: center; padding: 1rem; border-bottom: 1px solid var(--border-card-glass); }
+        
+        /* --- MODAL STYLES (Improved) --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0,0,0,0.5); /* Darker backdrop */
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            display: none; align-items: center; justify-content: center;
+            z-index: 50; opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .modal-container {
+            background-color: var(--modal-bg); /* Use new solid variable */
+            border-radius: 1rem; border: 1px solid var(--border-card-glow);
+            width: 90%; max-width: 800px; max-height: 90vh;
             display: flex; flex-direction: column;
-            cursor: pointer;
+            transform: translateY(20px) scale(0.98); /* Start slightly down and smaller */
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1); /* Smooth spring animation */
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4);
+            overflow: hidden;
         }
-        .tech-card:hover {
-            border-color: var(--border-card-glow);
-            box-shadow: 0 0 30px -10px var(--border-card-glow);
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-card-glass);
+            flex-shrink: 0;
         }
-        .card-preview {
-            min-height: 120px; display: flex; align-items: center; justify-content: center;
-            padding: 1rem; border-bottom: 1px solid var(--border-card-glass);
+        .modal-title { font-size: 1.25rem; font-weight: 700; color: var(--text-main); }
+        .modal-close-btn {
+            background: none; border: none; font-size: 1.75rem; line-height: 1;
+            color: var(--text-muted); cursor: pointer; transition: color 0.2s, transform 0.2s;
         }
-
+        .modal-close-btn:hover { color: var(--text-main); transform: rotate(90deg); }
+        .modal-content { padding: 0 1.5rem 1.5rem 1.5rem; overflow-y: auto; }
+        
         /* --- OTHER UI ELEMENTS --- */
-        .sync-button {
-             background-color: var(--highlight-primary);
-             color: var(--bg-dark);
-             font-family: 'Ubuntu Mono', monospace;
-             padding: 0.75rem 2rem; border-radius: 0.5rem;
-             border: 2px solid var(--border-color);
-             transition: all 0.3s ease;
-        }
-        #theme-switcher {
-            position: fixed; bottom: 1.5rem; right: 1.5rem;
-            width: 3.5rem; height: 3.5rem; border-radius: 50%;
-            background-color: var(--bg-card-glass);
-            border: 2px solid var(--border-color);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; z-index: 100; font-size: 1.5rem;
-            transition: all 0.3s ease;
-        }
-        /* Modal, grid, and other styles are largely the same */
         .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; min-height: 300px; }
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 50; opacity: 0; transition: opacity 0.3s ease; }
-        .modal-container { background-color: var(--bg-card-glass); border-radius: 0.5rem; border: 1px solid var(--border-card-glow); width: 90%; max-width: 800px; max-height: 90vh; display: flex; flex-direction: column; transform: scale(0.95); transition: all 0.3s ease; }
-        .modal-content { padding: 1.5rem; overflow-y: auto; }
+        .sync-button { background-color: var(--highlight-primary); color: var(--bg-dark); font-family: 'Ubuntu Mono', monospace; padding: 0.75rem 2rem; border-radius: 0.5rem; border: 2px solid var(--border-color); transition: all 0.3s ease; }
+        #theme-switcher { position: fixed; bottom: 1.5rem; right: 1.5rem; width: 3.5rem; height: 3.5rem; border-radius: 50%; background-color: var(--bg-card-glass); border: 2px solid var(--border-color); backdrop-filter: blur(10px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 100; font-size: 1.5rem; transition: all 0.3s ease; }
     </style>
 </head>
 <body class="p-4 sm:p-8">
 
-    <!-- Backgrounds are now part of the main page structure -->
-    <div class="background-blobs">
-        <div class="blob1"></div>
-        <div class="blob2"></div>
-    </div>
+    <div class="background-blobs"> <div class="blob1"></div> <div class="blob2"></div> </div>
     <div id="particles-js"></div>
 
     <div class="content-wrapper">
         <header class="text-center mb-12">
             <h1 class="text-4xl sm:text-5xl font-bold">Element Dashboard</h1>
             <p class="text-lg text-muted mt-2">A dynamic library of UI components.</p>
-            <div class="mt-8">
-                <button id="sync-button" class="sync-button font-bold text-lg">
-                    Sync Elements
-                </button>
-            </div>
+            <div class="mt-8"> <button id="sync-button" class="sync-button font-bold text-lg"> Sync Elements </button> </div>
         </header>
         <main>
             <div id="card-grid" class="card-grid">
@@ -181,17 +157,16 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // --- CONFIGURATION ---
             const elementFiles = [
                 '[DEV]glow-pulse-text.json',
                 '[DEV]fab-theme-switcher.json',
                 '[DEV]glass-3d-card.json'
             ];
             
-            // --- ELEMENT SELECTORS ---
             const syncButton = document.getElementById('sync-button');
             const themeSwitcher = document.getElementById('theme-switcher');
             const cardGrid = document.getElementById('card-grid');
+            const modalContainer = document.getElementById('modal-container');
 
             // --- THEME SWITCHER LOGIC ---
             const themes = {
@@ -206,35 +181,17 @@
                 document.documentElement.className = themeName;
                 localStorage.setItem('dashboard-theme', themeName);
                 currentThemeIndex = themeKeys.indexOf(themeName);
-                
-                // Update PrismJS theme
                 document.getElementById('prism-theme-dark').disabled = (themeName === 'theme-light');
                 document.getElementById('prism-theme-light').disabled = (themeName !== 'theme-light');
-                
-                // Re-initialize particles with new theme colors
                 loadParticles(themeName);
             }
 
             function loadParticles(themeName) {
                 const themeConfig = themes[themeName];
                 if (!window.particlesJS || !themeConfig) return;
-
-                if (window.pJSDom && window.pJSDom.length > 0) {
-                    window.pJSDom[0].pJS.fn.vendors.destroypJS();
-                    window.pJSDom = [];
-                }
-
+                if (window.pJSDom && window.pJSDom.length > 0) { window.pJSDom[0].pJS.fn.vendors.destroypJS(); window.pJSDom = []; }
                 particlesJS('particles-js', {
-                    particles: {
-                        number: { value: 50 },
-                        color: { value: themeConfig.particleColor },
-                        line_linked: { color: themeConfig.lineColor, opacity: 0.4 },
-                        // other particle settings...
-                        shape: { type: 'circle' },
-                        opacity: { value: 0.5, random: false },
-                        size: { value: 3, random: true },
-                        move: { enable: true, speed: 1, direction: 'none', out_mode: 'out' }
-                    },
+                    particles: { number: { value: 50 }, color: { value: themeConfig.particleColor }, line_linked: { color: themeConfig.lineColor, opacity: 0.4 }, shape: { type: 'circle' }, opacity: { value: 0.5, random: false }, size: { value: 3, random: true }, move: { enable: true, speed: 1, direction: 'none', out_mode: 'out' } },
                     interactivity: { events: { onhover: { enable: true, mode: 'grab' } } }
                 });
             }
@@ -249,8 +206,7 @@
               document.querySelectorAll(selector).forEach(card => {
                 card.addEventListener('mousemove', e => {
                   const { width, height, left, top } = card.getBoundingClientRect();
-                  const x = e.clientX - left;
-                  const y = e.clientY - top;
+                  const x = e.clientX - left; const y = e.clientY - top;
                   const rotateX = ((y - height / 2) / (height / 2) * -8).toFixed(2);
                   const rotateY = ((x - width / 2) / (width / 2) * 8).toFixed(2);
                   card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`;
@@ -263,10 +219,8 @@
 
             // --- MAIN DASHBOARD LOGIC ---
             async function syncAndLoadElements() {
-                syncButton.disabled = true;
-                syncButton.textContent = 'Syncing...';
-                cardGrid.innerHTML = ''; 
-                document.getElementById('modal-container').innerHTML = '';
+                syncButton.disabled = true; syncButton.textContent = 'Syncing...';
+                cardGrid.innerHTML = ''; modalContainer.innerHTML = '';
                 document.getElementById('initial-prompt')?.remove();
 
                 for (const fileName of elementFiles) {
@@ -274,29 +228,21 @@
                         const response = await fetch(`./elements/${fileName}`);
                         if (!response.ok) throw new Error(`Failed to load ${fileName}`);
                         const data = await response.json();
-                        
                         cardGrid.insertAdjacentHTML('beforeend', createCardHTML(data));
-                        document.getElementById('modal-container').insertAdjacentHTML('beforeend', createModalHTML(data));
+                        modalContainer.insertAdjacentHTML('beforeend', createModalHTML(data));
                     } catch (error) {
                         console.error(error);
                         cardGrid.innerHTML += `<p class="text-red-400">Error: ${error.message}</p>`;
                     }
                 }
-                
                 attachEventListeners();
-                
-                syncButton.disabled = false;
-                syncButton.textContent = 'Sync Elements';
+                syncButton.disabled = false; syncButton.textContent = 'Sync Elements';
             }
             
-            // --- HTML CREATORS AND EVENT LISTENERS ---
             function createCardHTML(data) {
                 return `
                     <div class="tech-card" data-modal-id="modal-${data.id}">
-                        <div class="card-preview">
-                            <style>${data.card_preview.css || ''}</style>
-                            ${data.card_preview.html}
-                        </div>
+                        <div class="card-preview"> <style>${data.card_preview.css || ''}</style> ${data.card_preview.html} </div>
                         <div class="p-6 flex-grow flex flex-col">
                             <h3 class="text-xl font-bold flex-grow" style="color: var(--text-main);">${data.card_title}</h3>
                             <p class="text-sm mt-2" style="color: var(--text-muted);">${data.card_description}</p>
@@ -305,38 +251,49 @@
             }
 
             function createModalHTML(data) {
-                // This function is complex and doesn't need to change.
-                // It builds the modal from the JSON structure.
                 let contentHTML = '';
                 data.modal_content.forEach(block => {
-                    if(block.type === 'title') contentHTML += `<h1>${block.text}</h1>`;
-                    if(block.type === 'subtitle') contentHTML += `<h2>${block.text}</h2>`;
-                    if(block.type === 'markdown') contentHTML += marked.parse(block.text);
-                    if(block.type === 'code_snippet') {
+                    if(block.type === 'subtitle') contentHTML += `<h2 class="text-xl font-bold mt-6 mb-2" style="color: var(--text-main);">${block.text}</h2>`;
+                    else if(block.type === 'markdown') contentHTML += marked.parse(block.text);
+                    else if(block.type === 'code_snippet') {
                          const lang = block.language || 'markup';
                          const highlighted = Prism.highlight(block.code, Prism.languages[lang], lang);
                          contentHTML += `<pre><code class="language-${lang}">${highlighted}</code></pre>`;
                     }
                 });
-                return `<div id="modal-${data.id}" class="modal-overlay"><div class="modal-container"><div class="modal-content">${contentHTML}</div></div></div>`;
+                return `
+                    <div id="modal-${data.id}" class="modal-overlay">
+                        <div class="modal-container">
+                            <div class="modal-header">
+                                <h2 class="modal-title">${data.card_title}</h2>
+                                <button class="modal-close-btn">&times;</button>
+                            </div>
+                            <div class="modal-content">${contentHTML}</div>
+                        </div>
+                    </div>`;
             }
 
             function attachEventListeners() {
-                initialize3DTilt('.tech-card'); // Apply 3D effect to all cards
-                
+                initialize3DTilt('.tech-card');
                 document.querySelectorAll('.tech-card').forEach(card => card.addEventListener('click', () => {
                     const modal = document.getElementById(card.dataset.modalId);
                     if(modal) {
                         modal.style.display = 'flex';
-                        setTimeout(() => modal.style.opacity = 1, 10);
+                        setTimeout(() => {
+                           modal.style.opacity = 1;
+                           modal.querySelector('.modal-container').style.transform = 'translateY(0) scale(1)';
+                        }, 10);
                     }
                 }));
-                document.querySelectorAll('.modal-overlay').forEach(modal => modal.addEventListener('click', e => {
-                    if (e.target === modal) {
+                document.querySelectorAll('.modal-overlay').forEach(modal => {
+                    const close = () => {
                         modal.style.opacity = 0;
+                        modal.querySelector('.modal-container').style.transform = 'translateY(20px) scale(0.98)';
                         setTimeout(() => modal.style.display = 'none', 300);
-                    }
-                }));
+                    };
+                    modal.addEventListener('click', e => { if (e.target === modal) close(); });
+                    modal.querySelector('.modal-close-btn').addEventListener('click', close);
+                });
             }
 
             // --- INITIALIZATION ---
