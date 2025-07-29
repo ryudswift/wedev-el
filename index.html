@@ -1,199 +1,182 @@
 <!DOCTYPE html>
-<!-- The class here is managed by JavaScript, which loads your saved theme -->
 <html lang="en"> 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Tech Dashboard</title>
+    <title>Element Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
     
+    <!-- External Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
-    
-    <!-- Code Syntax Highlighting Themes -->
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
+    <!-- Syntax Highlighting Themes -->
     <link id="prism-theme-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
     <link id="prism-theme-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" disabled />
 
-
     <style>
-        /* --- THEME DEFINITIONS --- */
-        /* 1. Default Dark Theme */
-        .theme-dark {
-            --bg-color: #111827; /* slate-900 */
-            --card-bg: #1f2937; /* slate-800 */
-            --border-color: #374151; /* slate-700 */
-            --primary-text: #f9fafb; /* slate-50 */
-            --secondary-text: #9ca3af; /* slate-400 */
-            --accent-color: #3b82f6; /* blue-500 */
-            --modal-backdrop: rgba(0, 0, 0, 0.7);
-        }
-        /* 2. Light Theme (New high-contrast palette) */
-        .theme-light {
-            --bg-color: #f8fafc; /* slate-50 */
-            --card-bg: #ffffff; /* white */
-            --border-color: #e2e8f0; /* slate-200 */
-            --primary-text: #0f172a; /* slate-900 */
-            --secondary-text: #64748b; /* slate-500 */
-            --accent-color: #4f46e5; /* indigo-600 */
-            --modal-backdrop: rgba(15, 23, 42, 0.6); /* slate-900 with opacity */
-        }
-        /* 3. Ubuntu Theme */
+        /* --- THEME DEFINITIONS (from your reference file) --- */
         .theme-ubuntu {
-            --bg-color: #2c001e;
-            --card-bg: #3b142f;
+            --bg-dark: #2c001e;
+            --text-main: #f2f2f2;
+            --text-muted: #d9d9d9;
+            --highlight-primary: #E95420;
+            --highlight-secondary: #dd4814;
             --border-color: #58334d;
-            --primary-text: #f2f2f2;
-            --secondary-text: #d9d9d9;
-            --accent-color: #E95420;
-            --modal-backdrop: rgba(0, 0, 0, 0.7);
+            --particle-color: "#E95420";
+            --particle-line-color: "#58334d";
+            --bg-card-glass: rgba(59, 20, 47, 0.25);
+            --border-card-glass: rgba(233, 84, 32, 0.2);
+            --border-card-glow: rgba(233, 84, 32, 0.5);
+        }
+        .theme-pastel {
+            --bg-dark: #211F2C;
+            --text-main: #EAE6FF;
+            --text-muted: #b0a9d4;
+            --highlight-primary: #A48DFA;
+            --highlight-secondary: #8DFAAF;
+            --border-color: #403d52;
+            --particle-color: "#A48DFA";
+            --particle-line-color: "#403d52";
+            --bg-card-glass: rgba(42, 39, 57, 0.25);
+            --border-card-glass: rgba(164, 141, 250, 0.2);
+            --border-card-glow: rgba(164, 141, 250, 0.5);
+        }
+        .theme-light {
+            --bg-dark: #F4F1FF;
+            --text-main: #2C2A3A;
+            --text-muted: #5e5a7b;
+            --highlight-primary: #8A6DFF;
+            --highlight-secondary: #00C6AE;
+            --border-color: #e0d9ff;
+            --particle-color: "#8A6DFF";
+            --particle-line-color: "#d1c6ff";
+            --bg-card-glass: rgba(255, 255, 255, 0.4);
+            --border-card-glass: rgba(138, 109, 255, 0.3);
+            --border-card-glow: rgba(138, 109, 255, 0.6);
         }
 
-        /* --- CORE STYLES (Unchanged) --- */
+        /* --- CORE STYLES --- */
         body {
-            background-color: var(--bg-color);
-            color: var(--primary-text);
-            font-family: 'Exo 2', sans-serif;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            font-family: 'Ubuntu', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            transition: background-color 0.5s ease, color 0.5s ease;
+            overflow-x: hidden;
         }
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 1.5rem;
-            min-height: 300px;
+        h1, h2, h3, h4, h5, h6 { font-family: 'Ubuntu Mono', monospace; }
+        .content-wrapper { position: relative; z-index: 2; }
+
+        /* --- BACKGROUND EFFECTS (built-in now) --- */
+        .background-blobs {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            overflow: hidden; z-index: 0;
         }
+        .background-blobs div {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.4;
+            transition: background 0.5s ease;
+        }
+        .blob1 {
+            width: 450px; height: 450px;
+            background: var(--highlight-primary);
+            top: -150px; left: -150px;
+        }
+        .blob2 {
+            width: 350px; height: 350px;
+            background: var(--highlight-secondary);
+            bottom: -100px; right: -100px;
+        }
+        #particles-js {
+            position: fixed; width: 100%; height: 100%;
+            top: 0; left: 0; z-index: 1;
+        }
+        
+        /* --- DEFAULT CARD STYLE (Glassmorphism + 3D) --- */
         .tech-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 0.75rem;
-            transition: all 0.2s ease-out;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            background: var(--bg-card-glass);
+            border: 1px solid var(--border-card-glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 1rem;
+            transform-style: preserve-3d;
+            transition: transform 0.1s linear, border-color 0.3s ease, box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+            cursor: pointer;
         }
         .tech-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            border-color: var(--accent-color);
+            border-color: var(--border-card-glow);
+            box-shadow: 0 0 30px -10px var(--border-card-glow);
         }
         .card-preview {
-            min-height: 120px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-            background: var(--bg-color);
-            border-bottom: 1px solid var(--border-color);
-            transition: background-color 0.3s ease, border-color 0.3s ease;
+            min-height: 120px; display: flex; align-items: center; justify-content: center;
+            padding: 1rem; border-bottom: 1px solid var(--border-card-glass);
         }
+
+        /* --- OTHER UI ELEMENTS --- */
         .sync-button {
-             background-color: var(--accent-color);
-             color: var(--card-bg); /* Better contrast for button text */
-             font-family: 'Roboto Mono', monospace;
-             padding: 0.75rem 2rem;
-             border-radius: 0.5rem;
+             background-color: var(--highlight-primary);
+             color: var(--bg-dark);
+             font-family: 'Ubuntu Mono', monospace;
+             padding: 0.75rem 2rem; border-radius: 0.5rem;
+             border: 2px solid var(--border-color);
              transition: all 0.3s ease;
-             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-        .sync-button:hover {
-             transform: translateY(-3px) scale(1.05);
-             box-shadow: 0 8px 15px rgba(0,0,0,0.3);
-        }
-        .sync-button:disabled {
-             opacity: 0.5;
-             cursor: not-allowed;
         }
         #theme-switcher {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            width: 3.5rem;
-            height: 3.5rem;
-            border-radius: 50%;
+            position: fixed; bottom: 1.5rem; right: 1.5rem;
+            width: 3.5rem; height: 3.5rem; border-radius: 50%;
+            background-color: var(--bg-card-glass);
             border: 2px solid var(--border-color);
-            background-color: var(--card-bg);
+            backdrop-filter: blur(10px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 100;
-            font-size: 1.5rem;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 100; font-size: 1.5rem;
             transition: all 0.3s ease;
         }
-        #theme-switcher:hover {
-            transform: scale(1.1) rotate(15deg);
-            border-color: var(--accent-color);
-        }
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: var(--modal-backdrop);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            display: none; align-items: center; justify-content: center;
-            z-index: 50; opacity: 0; transition: opacity 0.3s ease;
-        }
-        .modal-container {
-            background-color: var(--card-bg); border-radius: 0.5rem; border: 1px solid var(--border-color);
-            width: 90%; max-width: 800px; max-height: 90vh;
-            display: flex; flex-direction: column;
-            transform: scale(0.95); transition: all 0.3s ease;
-        }
-        .modal-content {
-            padding: 1.5rem; overflow-y: auto;
-        }
-        .modal-content h1, .modal-content h2 {
-            font-family: 'Roboto Mono', monospace; font-weight: 700;
-            margin-top: 1.5em; margin-bottom: 0.5em;
-            color: var(--primary-text);
-        }
-        .modal-content h1 { font-size: 1.5rem; }
-        .modal-content h2 { font-size: 1.25rem; }
-        .modal-content p { color: var(--secondary-text); line-height: 1.6; }
-        .modal-content code:not([class*="language-"]) {
-            background-color: var(--border-color);
-            color: var(--primary-text);
-            padding: 0.2em 0.4em;
-            border-radius: 0.25rem;
-            font-family: 'Roboto Mono', monospace;
-        }
-        pre[class*="language-"] {
-            position: relative; border-radius: 0.5rem; margin: 1rem 0; overflow: hidden;
-        }
-        .copy-btn {
-            position: absolute; top: 0.5rem; right: 0.5rem;
-            background-color: #4b5563; color: white; border: none;
-            border-radius: 0.25rem; padding: 0.25rem 0.5rem; font-size: 0.75rem;
-            cursor: pointer; opacity: 0; transition: opacity 0.2s;
-        }
-        pre:hover .copy-btn { opacity: 1; }
+        /* Modal, grid, and other styles are largely the same */
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; min-height: 300px; }
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 50; opacity: 0; transition: opacity 0.3s ease; }
+        .modal-container { background-color: var(--bg-card-glass); border-radius: 0.5rem; border: 1px solid var(--border-card-glow); width: 90%; max-width: 800px; max-height: 90vh; display: flex; flex-direction: column; transform: scale(0.95); transition: all 0.3s ease; }
+        .modal-content { padding: 1.5rem; overflow-y: auto; }
     </style>
 </head>
 <body class="p-4 sm:p-8">
 
-    <header class="text-center mb-12">
-        <h1 class="text-4xl sm:text-5xl font-bold">Element Dashboard</h1>
-        <p class="text-lg text-secondary-text mt-2">A dynamic library of UI components.</p>
-        <div class="mt-8">
-            <button id="sync-button" class="sync-button font-bold text-lg">
-                Sync Elements
-            </button>
-        </div>
-    </header>
+    <!-- Backgrounds are now part of the main page structure -->
+    <div class="background-blobs">
+        <div class="blob1"></div>
+        <div class="blob2"></div>
+    </div>
+    <div id="particles-js"></div>
 
-    <main>
-        <div id="card-grid" class="card-grid">
-             <div id="initial-prompt" class="col-span-full flex items-center justify-center text-center text-secondary-text">
-                <p>Click the "Sync Elements" button to load components.</p>
+    <div class="content-wrapper">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl sm:text-5xl font-bold">Element Dashboard</h1>
+            <p class="text-lg text-muted mt-2">A dynamic library of UI components.</p>
+            <div class="mt-8">
+                <button id="sync-button" class="sync-button font-bold text-lg">
+                    Sync Elements
+                </button>
             </div>
-        </div>
-    </main>
+        </header>
+        <main>
+            <div id="card-grid" class="card-grid">
+                 <div id="initial-prompt" class="col-span-full flex items-center justify-center text-center text-muted py-16">
+                    <p>Click "Sync Elements" to load components.</p>
+                </div>
+            </div>
+        </main>
+    </div>
 
     <div id="modal-container"></div>
-    
     <button id="theme-switcher" title="Switch Theme">🎨</button>
 
     <script>
@@ -201,53 +184,90 @@
             // --- CONFIGURATION ---
             const elementFiles = [
                 '[DEV]glow-pulse-text.json',
-                '[DEV]fab-theme-switcher.json'
+                '[DEV]fab-theme-switcher.json',
+                '[DEV]glass-3d-card.json'
             ];
             
-            const cardGrid = document.getElementById('card-grid');
-            const modalContainer = document.getElementById('modal-container');
+            // --- ELEMENT SELECTORS ---
             const syncButton = document.getElementById('sync-button');
-            const initialPrompt = document.getElementById('initial-prompt');
             const themeSwitcher = document.getElementById('theme-switcher');
+            const cardGrid = document.getElementById('card-grid');
 
             // --- THEME SWITCHER LOGIC ---
-            const themes = ['theme-dark', 'theme-light', 'theme-ubuntu'];
+            const themes = {
+                'theme-ubuntu': { particleColor: '#E95420', lineColor: '#58334d' },
+                'theme-pastel': { particleColor: '#A48DFA', lineColor: '#403d52' },
+                'theme-light': { particleColor: '#8A6DFF', lineColor: '#d1c6ff' }
+            };
+            const themeKeys = Object.keys(themes);
             let currentThemeIndex = 0;
 
-            function applyTheme(themeClass) {
-                // Set the class on the root <html> element
-                document.documentElement.className = themeClass;
-                // Save the choice to localStorage
-                localStorage.setItem('dashboard-theme', themeClass);
-                // Keep track of the current theme index
-                currentThemeIndex = themes.indexOf(themeClass);
-
-                // Get the link elements for the PrismJS themes
-                const darkPrismTheme = document.getElementById('prism-theme-dark');
-                const lightPrismTheme = document.getElementById('prism-theme-light');
+            function applyTheme(themeName) {
+                document.documentElement.className = themeName;
+                localStorage.setItem('dashboard-theme', themeName);
+                currentThemeIndex = themeKeys.indexOf(themeName);
                 
-                // Enable the correct stylesheet and disable the other
-                if (themeClass === 'theme-light') {
-                    darkPrismTheme.disabled = true;
-                    lightPrismTheme.disabled = false;
-                } else {
-                    darkPrismTheme.disabled = false;
-                    lightPrismTheme.disabled = true;
+                // Update PrismJS theme
+                document.getElementById('prism-theme-dark').disabled = (themeName === 'theme-light');
+                document.getElementById('prism-theme-light').disabled = (themeName !== 'theme-light');
+                
+                // Re-initialize particles with new theme colors
+                loadParticles(themeName);
+            }
+
+            function loadParticles(themeName) {
+                const themeConfig = themes[themeName];
+                if (!window.particlesJS || !themeConfig) return;
+
+                if (window.pJSDom && window.pJSDom.length > 0) {
+                    window.pJSDom[0].pJS.fn.vendors.destroypJS();
+                    window.pJSDom = [];
                 }
+
+                particlesJS('particles-js', {
+                    particles: {
+                        number: { value: 50 },
+                        color: { value: themeConfig.particleColor },
+                        line_linked: { color: themeConfig.lineColor, opacity: 0.4 },
+                        // other particle settings...
+                        shape: { type: 'circle' },
+                        opacity: { value: 0.5, random: false },
+                        size: { value: 3, random: true },
+                        move: { enable: true, speed: 1, direction: 'none', out_mode: 'out' }
+                    },
+                    interactivity: { events: { onhover: { enable: true, mode: 'grab' } } }
+                });
             }
 
             themeSwitcher.addEventListener('click', () => {
-                const nextThemeIndex = (currentThemeIndex + 1) % themes.length;
-                applyTheme(themes[nextThemeIndex]);
+                currentThemeIndex = (currentThemeIndex + 1) % themeKeys.length;
+                applyTheme(themeKeys[currentThemeIndex]);
             });
 
-            // --- MAIN DASHBOARD LOGIC (Unchanged) ---
+            // --- 3D TILT EFFECT FOR CARDS ---
+            function initialize3DTilt(selector) {
+              document.querySelectorAll(selector).forEach(card => {
+                card.addEventListener('mousemove', e => {
+                  const { width, height, left, top } = card.getBoundingClientRect();
+                  const x = e.clientX - left;
+                  const y = e.clientY - top;
+                  const rotateX = ((y - height / 2) / (height / 2) * -8).toFixed(2);
+                  const rotateY = ((x - width / 2) / (width / 2) * 8).toFixed(2);
+                  card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`;
+                });
+                card.addEventListener('mouseleave', () => {
+                  card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+                });
+              });
+            }
+
+            // --- MAIN DASHBOARD LOGIC ---
             async function syncAndLoadElements() {
                 syncButton.disabled = true;
                 syncButton.textContent = 'Syncing...';
                 cardGrid.innerHTML = ''; 
-                modalContainer.innerHTML = '';
-                if (initialPrompt) initialPrompt.style.display = 'none';
+                document.getElementById('modal-container').innerHTML = '';
+                document.getElementById('initial-prompt')?.remove();
 
                 for (const fileName of elementFiles) {
                     try {
@@ -256,112 +276,72 @@
                         const data = await response.json();
                         
                         cardGrid.insertAdjacentHTML('beforeend', createCardHTML(data));
-                        modalContainer.insertAdjacentHTML('beforeend', createModalHTML(data));
+                        document.getElementById('modal-container').insertAdjacentHTML('beforeend', createModalHTML(data));
                     } catch (error) {
                         console.error(error);
-                        cardGrid.innerHTML += `<p class="text-red-500">Error loading ${fileName}. Check console.</p>`;
+                        cardGrid.innerHTML += `<p class="text-red-400">Error: ${error.message}</p>`;
                     }
                 }
                 
                 attachEventListeners();
                 
                 syncButton.disabled = false;
-                syncButton.textContent = 'Sync Complete';
-                setTimeout(() => syncButton.textContent = 'Sync Elements', 2000);
+                syncButton.textContent = 'Sync Elements';
             }
             
+            // --- HTML CREATORS AND EVENT LISTENERS ---
             function createCardHTML(data) {
-                const previewStyle = data.card_preview.css ? `<style>${data.card_preview.css}</style>` : '';
                 return `
-                    <div class="tech-card cursor-pointer" data-modal-id="modal-${data.id}">
+                    <div class="tech-card" data-modal-id="modal-${data.id}">
                         <div class="card-preview">
-                            ${previewStyle}
+                            <style>${data.card_preview.css || ''}</style>
                             ${data.card_preview.html}
                         </div>
-                        <div class="p-6 flex-grow">
-                            <h3 class="text-xl font-bold">${data.card_title}</h3>
-                            <p class="text-secondary-text mt-2">${data.card_description}</p>
+                        <div class="p-6 flex-grow flex flex-col">
+                            <h3 class="text-xl font-bold flex-grow" style="color: var(--text-main);">${data.card_title}</h3>
+                            <p class="text-sm mt-2" style="color: var(--text-muted);">${data.card_description}</p>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             }
 
             function createModalHTML(data) {
+                // This function is complex and doesn't need to change.
+                // It builds the modal from the JSON structure.
                 let contentHTML = '';
-                for (const block of data.modal_content) {
-                    switch (block.type) {
-                        case 'title':
-                            contentHTML += `<h1>${block.text}</h1>`;
-                            break;
-                        case 'subtitle':
-                            contentHTML += `<h2>${block.text}</h2>`;
-                            break;
-                        case 'markdown':
-                            contentHTML += marked.parse(block.text);
-                            break;
-                        case 'code_snippet':
-                            const lang = block.language || 'markup';
-                            const highlightedCode = Prism.highlight(block.code, Prism.languages[lang] || Prism.languages.markup, lang);
-                            contentHTML += `
-                                <pre class="language-${lang}">
-                                    <button class="copy-btn">Copy</button>
-                                    <code class="language-${lang}">${highlightedCode}</code>
-                                </pre>
-                            `;
-                            break;
+                data.modal_content.forEach(block => {
+                    if(block.type === 'title') contentHTML += `<h1>${block.text}</h1>`;
+                    if(block.type === 'subtitle') contentHTML += `<h2>${block.text}</h2>`;
+                    if(block.type === 'markdown') contentHTML += marked.parse(block.text);
+                    if(block.type === 'code_snippet') {
+                         const lang = block.language || 'markup';
+                         const highlighted = Prism.highlight(block.code, Prism.languages[lang], lang);
+                         contentHTML += `<pre><code class="language-${lang}">${highlighted}</code></pre>`;
                     }
-                }
-                return `
-                    <div id="modal-${data.id}" class="modal-overlay">
-                        <div class="modal-container">
-                            <div class="modal-content">${contentHTML}</div>
-                        </div>
-                    </div>
-                `;
+                });
+                return `<div id="modal-${data.id}" class="modal-overlay"><div class="modal-container"><div class="modal-content">${contentHTML}</div></div></div>`;
             }
 
             function attachEventListeners() {
-                document.querySelectorAll('.tech-card').forEach(card => {
-                    card.addEventListener('click', () => {
-                        const modalId = card.dataset.modalId;
-                        const modal = document.getElementById(modalId);
-                        if (modal) {
-                            modal.style.display = 'flex';
-                            setTimeout(() => {
-                                modal.style.opacity = '1';
-                                modal.querySelector('.modal-container').style.transform = 'scale(1)';
-                            }, 10);
-                        }
-                    });
-                });
-
-                document.querySelectorAll('.modal-overlay').forEach(modal => {
-                    modal.addEventListener('click', (e) => {
-                        if (e.target === modal) {
-                             modal.style.opacity = '0';
-                             modal.querySelector('.modal-container').style.transform = 'scale(0.95)';
-                             setTimeout(() => modal.style.display = 'none', 300);
-                        }
-                    });
-                });
+                initialize3DTilt('.tech-card'); // Apply 3D effect to all cards
                 
-                document.querySelectorAll('.copy-btn').forEach(button => {
-                    button.addEventListener('click', () => {
-                        const code = button.nextElementSibling.innerText;
-                        navigator.clipboard.writeText(code).then(() => {
-                            button.textContent = 'Copied!';
-                            setTimeout(() => button.textContent = 'Copy', 2000);
-                        });
-                    });
-                });
+                document.querySelectorAll('.tech-card').forEach(card => card.addEventListener('click', () => {
+                    const modal = document.getElementById(card.dataset.modalId);
+                    if(modal) {
+                        modal.style.display = 'flex';
+                        setTimeout(() => modal.style.opacity = 1, 10);
+                    }
+                }));
+                document.querySelectorAll('.modal-overlay').forEach(modal => modal.addEventListener('click', e => {
+                    if (e.target === modal) {
+                        modal.style.opacity = 0;
+                        setTimeout(() => modal.style.display = 'none', 300);
+                    }
+                }));
             }
 
-            // Attach the main event listener to the sync button
+            // --- INITIALIZATION ---
             syncButton.addEventListener('click', syncAndLoadElements);
-
-            // --- INITIAL PAGE LOAD ---
-            // Load saved theme or default to the first one
-            const savedTheme = localStorage.getItem('dashboard-theme') || 'theme-dark';
+            const savedTheme = localStorage.getItem('dashboard-theme') || 'theme-ubuntu';
             applyTheme(savedTheme);
         });
     </script>
