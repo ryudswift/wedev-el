@@ -1,1 +1,59 @@
 
+{
+  "id": "dev-fab-theme-switcher",
+  "card_title": "[DEV] FAB Theme Switcher",
+  "card_description": "A floating action button that cycles through multiple predefined CSS themes on the page, with smooth transitions.",
+  "card_preview": {
+    "html": "<div class='preview-fab-container'><button id='preview-theme-btn' class='preview-fab'>🎨</button></div>",
+    "css": ".preview-fab-container { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; } .preview-fab { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #58334d; background-color: rgba(59, 20, 47, 0.5); backdrop-filter: blur(5px); font-size: 1.5rem; transition: all 0.3s ease; } .preview-fab:hover { transform: scale(1.1) rotate(15deg); border-color: #E95420; }"
+  },
+  "modal_content": [
+    {
+      "type": "title",
+      "text": "Floating Action Button (FAB) Theme Switcher"
+    },
+    {
+      "type": "markdown",
+      "text": "This component allows users to cycle through different visual themes defined in your CSS. It works by changing a class on the root `<html>` element, which causes a different set of CSS variables to become active. This is a highly efficient way to manage multiple themes."
+    },
+    {
+      "type": "subtitle",
+      "text": "1. CSS: Define Your Themes"
+    },
+    {
+      "type": "markdown",
+      "text": "The core of this system is CSS variables. You define a default set of colors in `:root` and then override them within specific theme classes (e.g., `.theme-light-fruity`). When the class on the `<html>` tag changes, all elements using these variables will update their colors instantly."
+    },
+    {
+      "type": "code_snippet",
+      "language": "css",
+      "code": "/* --- Default (Dark) Theme --- */\n:root {\n    --bg-dark: #2c001e;\n    --text-main: #f2f2f2;\n    --text-muted: #d9d9d9;\n    --highlight-primary: #E95420;\n    --border-color: #58334d;\n    --bg-card-glass: rgba(59, 20, 47, 0.25);\n    --border-card-glass: rgba(233, 84, 32, 0.2);\n}\n\n/* --- Light Theme Example --- */\n.theme-light-fruity {\n    --bg-dark: #FFF9F2;\n    --text-main: #5D4037;\n    --text-muted: #795548;\n    --highlight-primary: #FF7043;\n    --border-color: #FFCCBC;\n    --bg-card-glass: rgba(255, 255, 255, 0.4);\n    --border-card-glass: rgba(255, 112, 67, 0.3);\n}\n\n/* Any element using these variables will update automatically */\nbody {\n    background-color: var(--bg-dark);\n    color: var(--text-main);\n    transition: background-color 0.5s ease, color 0.5s ease;\n}"
+    },
+    {
+      "type": "subtitle",
+      "text": "2. HTML: The Button"
+    },
+    {
+      "type": "markdown",
+      "text": "Place a simple button in a container. This button will be your theme switcher. It's often placed in a `position: fixed` container so it's always accessible."
+    },
+    {
+      "type": "code_snippet",
+      "language": "html",
+      "code": "<!-- Theme Switcher FAB -->\n<div id=\"theme-fab-container\" style=\"position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 100;\">\n    <button id=\"theme-fab-toggle\" title=\"Switch Theme\">\n        <!-- You can use an SVG icon here -->\n        🎨\n    </button>\n</div>"
+    },
+    {
+      "type": "subtitle",
+      "text": "3. JavaScript: The Logic"
+    },
+    {
+      "type": "markdown",
+      "text": "This script listens for clicks on the button. It keeps track of the available themes in an array and cycles through them, applying the chosen theme's class to the `<html>` element and saving the choice to `localStorage` so it persists between visits."
+    },
+    {
+      "type": "code_snippet",
+      "language": "javascript",
+      "code": "document.addEventListener('DOMContentLoaded', () => {\n    const themeToggleButton = document.getElementById('theme-fab-toggle');\n\n    // Define the class names of your themes\n    const themes = ['theme-ubuntu', 'theme-pastel-terminal', 'theme-light-fruity'];\n    let currentThemeIndex = 0;\n\n    function setTheme(themeName) {\n        // Apply the class to the root element\n        document.documentElement.className = themeName;\n        // Save the user's preference\n        localStorage.setItem('dashboard-theme', themeName);\n        // Update the current index\n        currentThemeIndex = themes.indexOf(themeName);\n    }\n\n    themeToggleButton.addEventListener('click', () => {\n        // Move to the next theme, looping back to the start if necessary\n        currentThemeIndex = (currentThemeIndex + 1) % themes.length;\n        const nextTheme = themes[currentThemeIndex];\n        setTheme(nextTheme);\n    });\n\n    // --- Initial Load ---\n    // On page load, check for a saved theme, or use the default\n    const savedTheme = localStorage.getItem('dashboard-theme') || themes[0];\n    setTheme(savedTheme);\n});"
+    }
+  ]
+}
