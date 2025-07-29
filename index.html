@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Tech Cards</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&family=Roboto:wght@400&display=swap" rel="stylesheet">
+    <style>
+        /*
+         * --- Changelog ---
+         * v0.02
+         * - Implemented a modal system that opens when a card is clicked.
+         * - The modal is designed to display code snippets for replication.
+         * - Added dedicated sections for HTML and CSS within the modal.
+         * - Included "Copy" buttons for each code snippet for easy-to-use context.
+         * - Refactored the grid to feature a single technology card ("Glow & Pulse").
+         * - Added JavaScript for modal and copy-to-clipboard functionality.
+         * * v0.01
+         * - Added pulsing animation to text using `transform: scale()`.
+         * - Created a card-based layout for content.
+         * - Implemented a 3x2 grid to arrange the cards.
+         * - Added detail text to each card.
+        */
+
+        /* The root element is used to define global CSS variables for easy theming. */
+        :root {
+            --glow-color: hsl(217, 100%, 65%);
+            --text-color: hsl(217, 100%, 85%);
+            --card-bg: #1a1a2e;
+            --card-border: #2a2a4e;
+            --detail-text-color: #a0a0c0;
+            --body-bg: #121221;
+        }
+
+        /* Basic styling for the body. */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top */
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem;
+            background-color: var(--body-bg);
+            font-family: 'Roboto', sans-serif;
+            color: var(--text-color);
+        }
+
+        /* Container for the cards. Using flexbox for responsiveness. */
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        /* Styling for the individual cards. */
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            width: 320px; /* Set a fixed width for cards */
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        /* Main class for the animated text effect. */
+        .animated-title {
+            color: var(--text-color);
+            font-family: 'Exo 2', sans-serif;
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 1rem;
+            /* Apply both animations here */
+            animation: glow 2s ease-in-out infinite, pulse 2s ease-in-out infinite;
+        }
+
+        /* Detail text styling. */
+        .card-detail {
+            font-size: 1rem;
+            color: var(--detail-text-color);
+            line-height: 1.5;
+        }
+
+        /* --- Animations --- */
+        @keyframes glow {
+            0%, 100% {
+                text-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color);
+            }
+            50% {
+                text-shadow: 0 0 20px var(--glow-color), 0 0 40px var(--glow-color);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        /* --- Modal Styles --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+            padding: 1rem;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 1rem;
+            padding: 2rem;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+        
+        .modal-content h2 {
+            font-family: 'Exo 2', sans-serif;
+            margin-top: 0;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            color: var(--detail-text-color);
+            font-size: 2.5rem;
+            line-height: 1;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: var(--text-color);
+        }
+
+        /* --- Code Snippet Styles --- */
+        .code-container {
+            margin-top: 1.5rem;
+            position: relative;
+        }
+
+        .code-container h3 {
+            font-family: 'Exo 2', sans-serif;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+            border-left: 3px solid var(--glow-color);
+            padding-left: 0.75rem;
+        }
+
+        pre {
+            background: var(--body-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 250px;
+            overflow-y: auto;
+            color: var(--detail-text-color);
+        }
+
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--card-border);
+            color: var(--text-color);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .copy-btn:hover {
+            background: var(--glow-color);
+            color: var(--body-bg);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="card-container">
+        <!-- Card that triggers the modal -->
+        <div class="card" data-modal-target="#modal-glow-pulse">
+            <h2 class="animated-title">GLOW & PULSE</h2>
+            <p class="card-detail">A classic tech effect. This combines a neon-like `text-shadow` glow with a subtle `transform: scale` pulse, all driven by CSS animations.</p>
+        </div>
+        <!-- Add more cards here as we create more tech examples -->
+    </div>
+
+    <!-- The Modal (hidden by default) -->
+    <div class="modal-overlay" id="modal-glow-pulse">
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <h2>Glow & Pulse Effect</h2>
+            <p>This effect uses two CSS `@keyframes` animations applied to the same element. One handles the `text-shadow` for the glow, and the other handles `transform: scale` for the pulse.</p>
+            
+            <div class="code-container">
+                <h3>HTML</h3>
+                <button class="copy-btn" data-copy-target="#html-code-glow-pulse">Copy HTML</button>
+                <pre><code id="html-code-glow-pulse">&lt;h1 class="animated-title"&gt;YOUR TEXT HERE&lt;/h1&gt;</code></pre>
+            </div>
+            
+            <div class="code-container">
+                <h3>CSS</h3>
+                <button class="copy-btn" data-copy-target="#css-code-glow-pulse">Copy CSS</button>
+                <pre><code id="css-code-glow-pulse">
+:root {
+    --glow-color: hsl(217, 100%, 65%);
+    --text-color: hsl(217, 100%, 85%);
+}
+
+.animated-title {
+    color: var(--text-color);
+    font-family: 'Exo 2', sans-serif; /* Recommended font */
+    font-size: 2rem; /* Adjust as needed */
+    animation: glow 2s ease-in-out infinite, pulse 2s ease-in-out infinite;
+}
+
+@keyframes glow {
+    0%, 100% {
+        text-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color);
+    }
+    50% {
+        text-shadow: 0 0 20px var(--glow-color), 0 0 40px var(--glow-color);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+                </code></pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Modal Opening/Closing Logic ---
+            const cards = document.querySelectorAll('.card');
+            const modals = document.querySelectorAll('.modal-overlay');
+            const closeButtons = document.querySelectorAll('.modal-close');
+
+            // Open modal when a card is clicked
+            cards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const modalId = card.dataset.modalTarget;
+                    const modal = document.querySelector(modalId);
+                    if (modal) {
+                        modal.classList.add('active');
+                    }
+                });
+            });
+
+            // Function to close a modal
+            const closeModal = (modal) => {
+                modal.classList.remove('active');
+            };
+
+            // Close modal with its close button
+            closeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    closeModal(button.closest('.modal-overlay'));
+                });
+            });
+
+            // Close modal when clicking on the overlay itself
+            modals.forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        closeModal(modal);
+                    }
+                });
+            });
+
+            // --- Copy-to-Clipboard Logic ---
+            const copyButtons = document.querySelectorAll('.copy-btn');
+            copyButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.dataset.copyTarget;
+                    const codeElement = document.querySelector(targetId);
+                    const textToCopy = codeElement.innerText;
+                    
+                    // The Clipboard API is modern and secure
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        const originalText = button.innerText;
+                        button.innerText = 'Copied!';
+                        // Reset button text after 2 seconds
+                        setTimeout(() => {
+                            button.innerText = originalText;
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('Failed to copy text: ', err);
+                        button.innerText = 'Error!';
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
